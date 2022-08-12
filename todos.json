@@ -3,21 +3,27 @@
     "id": 0,
     "title": "買い物に行く",
     "text": "服を買う",
-    "priority": "高",
-    "completed": false
+    "priority": 1,
+    "completed": false,
+    "createDate": 20220801,
+    "closingDate": 20220831
   },
   {
     "id": 1,
     "title": "街に出かける",
     "text": "食べ歩きをする",
-    "priority": "中",
-    "completed": false
+    "priority": 2,
+    "completed": false,
+    "createDate": 20220815,
+    "closingDate": 20220825
   },
   {
     "id": 2,
     "title": "散歩に出かける",
     "text": "ジョギングをする",
-    "priority": "低",
-    "completed": false
+    "priority": 3,
+    "completed": false,
+    "createDate": 20220805,
+    "closingDate": 20220815
   }
 ]

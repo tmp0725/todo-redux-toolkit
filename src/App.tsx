@@ -1,32 +1,45 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import {
-  addTodo,
-  deleteTodo,
-  priorityChange,
-  deleteAllTodosCompleted,
-} from "./redux-toolkit/action";
 import { useAppDispatch } from "./redux-toolkit/store";
 import { getTodo } from "./redux-toolkit/getApi";
 import { State, Todo } from "./types";
+import {
+  addTodo,
+  deleteTodo,
+  todoPrioritySort,
+  todoCreateDateSort,
+  todoClosingDateSort,
+  todoCompletedChange,
+  deleteAllTodosCompleted,
+} from "./redux-toolkit/slice";
+import { today } from "./date";
 
 export const App = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const { todos, loading, error } = useSelector((state: State) => state.todos);
-  console.log(todos);
 
   const [todo, setTodo] = useState<Todo>({
-    id: 3,
+    id: todos.length,
     title: "",
     text: "",
-    priority: "",
+    priority: 0,
+    completed: false,
+    createDate: Number(today),
     closingDate: "",
   });
 
+  let replaceClosingDate = todo.closingDate.replace(/-/g, "");
+
   useEffect(() => {
-    dispatch(getTodo());
+    // dispatch(getTodo());
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem("SaveTodosLocalStorage", JSON.stringify(todos));
+  }, [todos]);
+
+  console.log(todos);
 
   const handleTitleChange = (e: any) => {
     setTodo({ ...todo, title: e.target.value });
@@ -36,24 +49,57 @@ export const App = (): JSX.Element => {
     setTodo({ ...todo, text: e.target.value });
   };
 
-  const handleSelectChange = (e: any) => {
-    setTodo({ ...todo, priority: e.target.value });
+  const handlePriorityChange = (e: any) => {
+    setTodo({ ...todo, priority: Number(e.target.value) });
   };
 
   const handleDateChange = (e: any) => {
     setTodo({ ...todo, closingDate: e.target.value });
   };
 
+  const handleDelete = (todoId: number) => {
+    dispatch(deleteTodo({ todoId }));
+  };
+
+  const prioritySort = () => {
+    dispatch(todoPrioritySort());
+  };
+
+  const createDateSort = () => {
+    dispatch(todoCreateDateSort());
+  };
+
+  const closingDateSort = () => {
+    dispatch(todoClosingDateSort());
+  };
+
+  const handleCompletedChange = (todoId: number, todoCompleted: boolean) => {
+    dispatch(
+      todoCompletedChange({
+        id: todoId,
+        completed: !todoCompleted,
+      })
+    );
+  };
+
+  const handleDeleteAllTodosCompleted = () => {
+    dispatch(deleteAllTodosCompleted());
+  };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!todo.title) return;
+    if (!todo.priority) return;
+    if (!todo.closingDate) return;
     dispatch(
       addTodo({
-        id: 3,
+        id: todo.id,
         title: todo.title,
         text: todo.text,
         priority: todo.priority,
-        closingDate: todo.closingDate,
+        completed: todo.completed,
+        createDate: todo.createDate,
+        closingDate: replaceClosingDate,
       })
     );
     setTodo({ ...todo, title: "", text: "" });
@@ -79,11 +125,11 @@ export const App = (): JSX.Element => {
           ></textarea>
           <span>
             <span>優先度:</span>
-            <select onChange={handleSelectChange}>
-              <option value=""></option>
-              <option value="高">高</option>
-              <option value="中">中</option>
-              <option value="低">低</option>
+            <select onChange={handlePriorityChange}>
+              <option value={0}></option>
+              <option value={1}>高</option>
+              <option value={2}>中</option>
+              <option value={3}>低</option>
             </select>
           </span>
           <span>
@@ -94,51 +140,64 @@ export const App = (): JSX.Element => {
         </div>
       </form>
       <span>
-        <button onClick={() => dispatch(priorityChange(todo.priority))}>
-          優先度
-        </button>
-        <button>作成日</button>
-        <button>締切日</button>
+        <button onClick={prioritySort}>優先度</button>
+        <button onClick={createDateSort}>作成日</button>
+        <button onClick={closingDateSort}>締切日</button>
       </span>
       {loading && <div>Loading...</div>}
       {error && <div>データの取得に失敗しました。</div>}
       <h3>未完了のTodoリスト</h3>
       <ul>
-        {todos
-          // .filter((todo) => todo.completed === false)
-          .map((todo: Todo) => (
-            <li key={todo.id}>
-              <input
-                type="checkbox"
-                // onClick={() =>
-                //   dispatch(todoCompletedChange(todo.id, todo.completed))
-                // }
-              />
-              <Link to="/todo-detail">
-                <span>{todo.title}</span>
-              </Link>
-              <span> {todo.text}</span>
-              <p></p>
-              <span>優先度:{todo.priority} </span>
-              <span>作成日:{todo.createDate} </span>
-              <span>締切日:{todo.closingDate}</span>
-              <button onClick={() => dispatch(deleteTodo(todo.id))}>
-                削除
-              </button>
-              <p></p>
-            </li>
-          ))}
+        {todos !== undefined && (
+          <>
+            {todos
+              .filter((todo: Todo) => todo.completed === false)
+              .map((todo: Todo) => (
+                <li key={todo.id}>
+                  <input
+                    type="checkbox"
+                    onClick={() =>
+                      handleCompletedChange(todo.id, todo.completed)
+                    }
+                  />
+                  <Link to={todo.id + "/todo-detail"}>
+                    <span>{todo.title}</span>
+                  </Link>
+                  <span> {todo.text}</span>
+                  <p></p>
+                  <span>優先度:</span>
+                  {todo.priority === 1 && <span>高 </span>}
+                  {todo.priority === 2 && <span>中 </span>}
+                  {todo.priority === 3 && <span>低 </span>}
+                  <span>作成日:{todo.createDate} </span>
+                  <span>締切日:{todo.closingDate}</span>
+                  <button onClick={() => handleDelete(todo.id)}>削除</button>
+                  <p></p>
+                </li>
+              ))}
+          </>
+        )}
       </ul>
       <h3>完了したTodoリスト</h3>
-      {todos
-        .filter((todo: any) => todo.completed === true)
-        .map((todo: any) => (
-          <div key={todo.id}>
-            <span>{todo.title}</span>
-            <span> {todo.text}</span>
-          </div>
-        ))}
-      <button onClick={() => dispatch(deleteAllTodosCompleted())}>
+      {todos !== undefined && (
+        <>
+          {todos
+            .filter((todo: Todo) => todo.completed === true)
+            .map((todo: Todo) => (
+              <div key={todo.id}>
+                <span>{todo.title}</span>
+                <span> {todo.text} </span>
+                <span>優先度:</span>
+                {todo.priority === 1 && <span>高 </span>}
+                {todo.priority === 2 && <span>中 </span>}
+                {todo.priority === 3 && <span>低 </span>}
+                <span>作成日:{todo.createDate} </span>
+                <span>締切日:{todo.closingDate}</span>
+              </div>
+            ))}
+        </>
+      )}
+      <button onClick={handleDeleteAllTodosCompleted}>
         完了済みのTodoを全て削除
       </button>
     </>
