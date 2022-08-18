@@ -16,6 +16,7 @@ export type Todo = {
   text: string;
   priority: number;
   completed: boolean;
+  deleted: boolean;
   createDate: number;
   closingDate: string;
 };

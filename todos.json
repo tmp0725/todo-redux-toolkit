@@ -5,6 +5,7 @@
     "text": "服を買う",
     "priority": 1,
     "completed": false,
+    "deleted": false,
     "createDate": 20220801,
     "closingDate": 20220831
   },
@@ -14,6 +15,7 @@
     "text": "食べ歩きをする",
     "priority": 2,
     "completed": false,
+    "deleted": false,
     "createDate": 20220815,
     "closingDate": 20220825
   },
@@ -23,6 +25,7 @@
     "text": "ジョギングをする",
     "priority": 3,
     "completed": false,
+    "deleted": false,
     "createDate": 20220805,
     "closingDate": 20220815
   }

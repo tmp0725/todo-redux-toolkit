@@ -14,16 +14,17 @@ export const todoSlice = createSlice({
         text: action.payload.text,
         priority: action.payload.priority,
         completed: action.payload.completed,
+        deleted: action.payload.deleted,
         createDate: action.payload.createDate,
         closingDate: action.payload.closingDate,
       };
       state.todos = [...state.todos, newTodos];
     },
-    deleteTodo: (state, action) => {
-      state.todos = state.todos.filter(
-        (todo) => todo.id !== action.payload.todoId
-      );
-    },
+    // deleteTodo: (state, action) => {
+    //   state.todos = state.todos.filter(
+    //     (todo) => todo.id !== action.payload.todoId
+    //   );
+    // },
     todoCompletedChange: (state, action) => {
       const i = state.todos.findIndex((todo) => todo.id === action.payload.id);
       state.todos[i].completed = action.payload.completed;
@@ -31,21 +32,21 @@ export const todoSlice = createSlice({
     deleteAllTodosCompleted: (state) => {
       state.todos = state.todos.filter((todo) => todo.completed === false);
     },
-    todoPrioritySort: (state) => {
-      state.todos.sort((a, b) => {
-        return a.priority - b.priority;
-      });
-    },
-    todoCreateDateSort: (state) => {
-      state.todos.sort((a, b) => {
-        return b.createDate - a.createDate;
-      });
-    },
-    todoClosingDateSort: (state) => {
-      state.todos.sort((a, b) => {
-        return Number(a.closingDate) - Number(b.closingDate);
-      });
-    },
+    // todoPrioritySort: (state) => {
+    //   state.todos.sort((a, b) => {
+    //     return a.priority - b.priority;
+    //   });
+    // },
+    // todoCreateDateSort: (state) => {
+    //   state.todos.sort((a, b) => {
+    //     return b.createDate - a.createDate;
+    //   });
+    // },
+    // todoClosingDateSort: (state) => {
+    //   state.todos.sort((a, b) => {
+    //     return Number(a.closingDate) - Number(b.closingDate);
+    //   });
+    // },
     todoTitleEdit: (state, action) => {
       const i = state.todos.findIndex((todo) => todo.id === action.payload.id);
       state.todos[i].title = action.payload.text;
@@ -55,7 +56,7 @@ export const todoSlice = createSlice({
       state.todos[i].text = action.payload.text;
     },
     todoEditCompleted: (state, action) => {
-      const i = state.todos.findIndex((todo) => todo.id === action.payload.id);
+      state.todos.findIndex((todo) => todo.id === action.payload.id);
       [state.todos, action.payload];
     },
   },
@@ -81,12 +82,12 @@ export const todoSlice = createSlice({
 
 export const {
   addTodo,
-  deleteTodo,
+  // deleteTodo,
   todoCompletedChange,
   deleteAllTodosCompleted,
-  todoPrioritySort,
-  todoCreateDateSort,
-  todoClosingDateSort,
+  // todoPrioritySort,
+  // todoCreateDateSort,
+  // todoClosingDateSort,
   todoTitleEdit,
   todoTextEdit,
   todoEditCompleted,

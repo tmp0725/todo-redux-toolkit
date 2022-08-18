@@ -6,10 +6,10 @@ import { getTodo } from "./redux-toolkit/getApi";
 import { State, Todo } from "./types";
 import {
   addTodo,
-  deleteTodo,
-  todoPrioritySort,
-  todoCreateDateSort,
-  todoClosingDateSort,
+  // deleteTodo,
+  // todoPrioritySort,
+  // todoCreateDateSort,
+  // todoClosingDateSort,
   todoCompletedChange,
   deleteAllTodosCompleted,
 } from "./redux-toolkit/slice";
@@ -25,6 +25,7 @@ export const App = (): JSX.Element => {
     text: "",
     priority: 0,
     completed: false,
+    deleted: false,
     createDate: Number(today),
     closingDate: "",
   });
@@ -32,14 +33,12 @@ export const App = (): JSX.Element => {
   let replaceClosingDate = todo.closingDate.replace(/-/g, "");
 
   useEffect(() => {
-    // dispatch(getTodo());
+    dispatch(getTodo());
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem("SaveTodosLocalStorage", JSON.stringify(todos));
-  }, [todos]);
-
-  console.log(todos);
+  // useEffect(() => {
+  //   localStorage.setItem("SaveTodosLocalStorage", JSON.stringify(todos));
+  // }, [todos]);
 
   const handleTitleChange = (e: any) => {
     setTodo({ ...todo, title: e.target.value });
@@ -57,21 +56,41 @@ export const App = (): JSX.Element => {
     setTodo({ ...todo, closingDate: e.target.value });
   };
 
+  // const handleDelete = (todoId: number) => {
+  //   dispatch(deleteTodo({ todoId }));
+  // };
+
   const handleDelete = (todoId: number) => {
-    dispatch(deleteTodo({ todoId }));
+    todos.map((todo) => {
+      if (todo.id === todoId) {
+        todo.deleted = true;
+      }
+    });
   };
 
   const prioritySort = () => {
-    dispatch(todoPrioritySort());
+    todos.sort((a, b) => a.priority - b.priority);
   };
 
   const createDateSort = () => {
-    dispatch(todoCreateDateSort());
+    todos.sort((a, b) => b.createDate - a.createDate);
   };
 
   const closingDateSort = () => {
-    dispatch(todoClosingDateSort());
+    todos.sort((a, b) => Number(a.closingDate) - Number(b.closingDate));
   };
+
+  // const prioritySort = () => {
+  //   dispatch(todoPrioritySort());
+  // };
+
+  // const createDateSort = () => {
+  //   dispatch(todoCreateDateSort());
+  // };
+
+  // const closingDateSort = () => {
+  //   dispatch(todoClosingDateSort());
+  // };
 
   const handleCompletedChange = (todoId: number, todoCompleted: boolean) => {
     dispatch(
@@ -98,6 +117,7 @@ export const App = (): JSX.Element => {
         text: todo.text,
         priority: todo.priority,
         completed: todo.completed,
+        deleted: todo.deleted,
         createDate: todo.createDate,
         closingDate: replaceClosingDate,
       })
@@ -151,7 +171,10 @@ export const App = (): JSX.Element => {
         {todos !== undefined && (
           <>
             {todos
-              .filter((todo: Todo) => todo.completed === false)
+              .filter(
+                (todo: Todo) =>
+                  todo.completed === false && todo.deleted === false
+              )
               .map((todo: Todo) => (
                 <li key={todo.id}>
                   <input
@@ -171,6 +194,7 @@ export const App = (): JSX.Element => {
                   {todo.priority === 3 && <span>低 </span>}
                   <span>作成日:{todo.createDate} </span>
                   <span>締切日:{todo.closingDate}</span>
+                  {/* <button onClick={() => handleDelete(todo.id)}>削除</button> */}
                   <button onClick={() => handleDelete(todo.id)}>削除</button>
                   <p></p>
                 </li>
