@@ -63,7 +63,7 @@ export const App = (): JSX.Element => {
   const handleDelete = (todoId: number) => {
     todos.map((todo) => {
       if (todo.id === todoId) {
-        todo.deleted = true;
+        // todo.deleted = true;
       }
     });
   };
