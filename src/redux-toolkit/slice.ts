@@ -20,11 +20,13 @@ export const todoSlice = createSlice({
       };
       state.todos = [...state.todos, newTodos];
     },
-    // deleteTodo: (state, action) => {
-    //   state.todos = state.todos.filter(
-    //     (todo) => todo.id !== action.payload.todoId
-    //   );
-    // },
+    deleteTodo: (state, action) => {
+      state.todos.map((todo) => {
+        if (todo.id === action.payload.todoId) {
+          todo.deleted = true;
+        }
+      });
+    },
     todoCompletedChange: (state, action) => {
       const i = state.todos.findIndex((todo) => todo.id === action.payload.id);
       state.todos[i].completed = action.payload.completed;
@@ -32,21 +34,15 @@ export const todoSlice = createSlice({
     deleteAllTodosCompleted: (state) => {
       state.todos = state.todos.filter((todo) => todo.completed === false);
     },
-    // todoPrioritySort: (state) => {
-    //   state.todos.sort((a, b) => {
-    //     return a.priority - b.priority;
-    //   });
-    // },
-    // todoCreateDateSort: (state) => {
-    //   state.todos.sort((a, b) => {
-    //     return b.createDate - a.createDate;
-    //   });
-    // },
-    // todoClosingDateSort: (state) => {
-    //   state.todos.sort((a, b) => {
-    //     return Number(a.closingDate) - Number(b.closingDate);
-    //   });
-    // },
+    todoPrioritySort: (state) => {
+      state.todos.sort((a, b) => a.priority - b.priority);
+    },
+    todoCreateDateSort: (state) => {
+      state.todos.sort((a, b) => b.createDate - a.createDate);
+    },
+    todoClosingDateSort: (state) => {
+      state.todos.sort((a, b) => Number(a.closingDate) - Number(b.closingDate));
+    },
     todoTitleEdit: (state, action) => {
       const i = state.todos.findIndex((todo) => todo.id === action.payload.id);
       state.todos[i].title = action.payload.text;
@@ -74,20 +70,18 @@ export const todoSlice = createSlice({
       state.loading = false;
       state.error = true;
     });
-    builder.addDefaultCase((state) => {
-      state;
-    });
+    builder.addDefaultCase((state) => state);
   },
 });
 
 export const {
   addTodo,
-  // deleteTodo,
+  deleteTodo,
   todoCompletedChange,
   deleteAllTodosCompleted,
-  // todoPrioritySort,
-  // todoCreateDateSort,
-  // todoClosingDateSort,
+  todoPrioritySort,
+  todoCreateDateSort,
+  todoClosingDateSort,
   todoTitleEdit,
   todoTextEdit,
   todoEditCompleted,

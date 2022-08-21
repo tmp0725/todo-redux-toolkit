@@ -1,3 +1,4 @@
+import { Box, Button, TextField } from "@mui/material";
 import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import {
@@ -26,25 +27,58 @@ export const TodoDetails = (): JSX.Element => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     dispatch(todoEditCompleted({ todoId, todoTitle, todoText }));
+    alert("Todoを編集しました");
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>TodoDetails</h2>
-      <Link to="/">戻る</Link>
-      <div>
-        <input
-          value={todoTitle}
-          onChange={(e) => handleTitleChange(Number(todoId), e.target.value)}
-        />
-      </div>
-      <textarea
-        value={todoText}
-        onChange={(e) => handleTextChange(Number(todoId), e.target.value)}
-      ></textarea>
-      <span>
-        <input type="submit" value="編集" />
-      </span>
-    </form>
+    <>
+      <h2 className="text-center">詳細画面</h2>
+      <form onSubmit={handleSubmit} className="flex justify-center">
+        <Box
+          sx={{
+            width: 500,
+            maxWidth: "100%",
+          }}
+        >
+          <div className="mb-10">
+            <Link to="/" className="no-underline">
+              <Button variant="contained" className="h-12" fullWidth>
+                戻る
+              </Button>
+            </Link>
+          </div>
+          <div>
+            <TextField
+              type="text"
+              placeholder="タイトル"
+              value={todoTitle}
+              onChange={(e) =>
+                handleTitleChange(Number(todoId), e.target.value)
+              }
+              fullWidth
+            />
+          </div>
+          <TextField
+            type="text"
+            placeholder="内容"
+            value={todoText}
+            onChange={(e) => handleTextChange(Number(todoId), e.target.value)}
+            fullWidth
+            multiline
+            rows={5}
+          />
+          <span>
+            <Button
+              type="submit"
+              variant="contained"
+              className="h-12"
+              fullWidth
+            >
+              <span className="text-base">編集</span>
+            </Button>
+          </span>
+        </Box>
+      </form>
+    </>
   );
 };
